@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modern Calculator</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#6C5CE7',secondary:'#A8A4FF'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+:root {
+--primary: #6C5CE7;
+--secondary: #A8A4FF;
+--accent: #FF7675;
+--bg-light-1: #F8F9FE;
+--bg-light-2: #FFFFFF;
+--bg-dark-1: #1A1A2E;
+--bg-dark-2: #16213E;
+--text-light: #2D3436;
+--text-dark: #FFFFFF;
+}
+body {
+font-family: 'Inter', sans-serif;
+transition: background-color 0.3s ease;
+}
+.calculator {
+background: linear-gradient(135deg, rgba(248, 249, 254, 0.7), rgba(255, 255, 255, 0.8));
+backdrop-filter: blur(10px);
+box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+transition: all 0.3s ease;
+}
+.dark .calculator {
+background: linear-gradient(135deg, rgba(26, 26, 46, 0.7), rgba(22, 33, 62, 0.8));
+}
+.display {
+font-family: 'Roboto Mono', monospace;
+background: rgba(255, 255, 255, 0.15);
+backdrop-filter: blur(5px);
+border: 1px solid rgba(255, 255, 255, 0.2);
+transition: all 0.3s ease;
+}
+.dark .display {
+background: rgba(0, 0, 0, 0.2);
+border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.calc-btn {
+transition: all 0.2s ease;
+box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.05),
+-4px -4px 8px rgba(255, 255, 255, 0.5);
+}
+.dark .calc-btn {
+box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2),
+-4px -4px 8px rgba(255, 255, 255, 0.05);
+}
+.calc-btn:hover {
+transform: scale(1.02);
+}
+.calc-btn:active {
+transform: scale(0.98);
+box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1),
+inset -2px -2px 5px rgba(255, 255, 255, 0.1);
+}
+.number-btn {
+background: rgba(255, 255, 255, 0.7);
+color: var(--text-light);
+}
+.dark .number-btn {
+background: rgba(255, 255, 255, 0.1);
+color: var(--text-dark);
+}
+.operator-btn {
+background: linear-gradient(135deg, var(--primary), var(--secondary));
+color: white;
+}
+.function-btn {
+background: rgba(168, 164, 255, 0.2);
+color: var(--primary);
+}
+.dark .function-btn {
+background: rgba(168, 164, 255, 0.15);
+color: var(--secondary);
+}
+.memory-btn {
+background: rgba(255, 118, 117, 0.2);
+color: var(--accent);
+}
+.dark .memory-btn {
+background: rgba(255, 118, 117, 0.15);
+}
+.mode-toggle {
+position: relative;
+height: 32px;
+border-radius: 16px;
+background: rgba(0, 0, 0, 0.05);
+overflow: hidden;
+}
+.dark .mode-toggle {
+background: rgba(255, 255, 255, 0.1);
+}
+.mode-toggle-slider {
+position: absolute;
+height: 28px;
+top: 2px;
+width: 50%;
+border-radius: 14px;
+background: var(--primary);
+transition: transform 0.3s ease;
+}
+.mode-toggle-slider.scientific {
+transform: translateX(100%);
+}
+.history-panel {
+position: absolute;
+top: 0;
+right: 0;
+height: 100%;
+width: 100%;
+background: inherit;
+transform: translateX(100%);
+transition: transform 0.3s ease;
+z-index: 10;
+}
+.history-panel.active {
+transform: translateX(0);
+}
+.scientific-keypad {
+display: none;
+}
+.scientific-mode .scientific-keypad {
+display: grid;
+}
+.scientific-mode .basic-keypad {
+display: none;
+}
+@media (max-width: 640px) {
+.calculator {
+border-radius: 0;
+height: 100vh;
+max-height: 100vh;
+}
+}
+input[type="checkbox"] {
+appearance: none;
+-webkit-appearance: none;
+position: relative;
+width: 50px;
+height: 26px;
+border-radius: 25px;
+background-color: rgba(0, 0, 0, 0.1);
+transition: background 0.3s;
+outline: none;
+cursor: pointer;
+}
+input[type="checkbox"]::after {
+content: "";
+position: absolute;
+top: 3px;
+left: 3px;
+width: 20px;
+height: 20px;
+border-radius: 50%;
+background-color: white;
+box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+transition: left 0.3s;
+}
+input[type="checkbox"]:checked {
+background-color: var(--primary);
+}
+input[type="checkbox"]:checked::after {
+left: 27px;
+}
+</style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4 transition-colors duration-300">
+<div class="calculator max-w-md w-full mx-auto rounded-3xl overflow-hidden shadow-2xl relative flex flex-col h-[650px] max-h-[90vh]">
+<div class="calculator-content flex flex-col h-full relative">
+<!-- Display Section -->
+<div class="display p-6 flex flex-col justify-between h-[180px] rounded-xl mb-4">
+<div class="flex justify-between items-center">
+<div id="memoryIndicator" class="text-xs font-medium opacity-70">M: 0</div>
+<button id="historyToggle" class="w-8 h-8 flex items-center justify-center text-primary">
+<i class="ri-history-line ri-lg"></i>
+</button>
+</div>
+<div class="expression-row text-right text-lg opacity-70 h-6 overflow-hidden">3 × (4 + 2) ÷ 2</div>
+<div class="result-row text-right text-4xl font-bold">9</div>
+</div>
+<!-- Mode Toggle & Theme -->
+<div class="controls flex justify-between items-center mb-4 px-4">
+<div class="mode-toggle w-48 relative">
+<div class="mode-toggle-slider" id="modeSlider"></div>
+<div class="flex justify-between relative z-1">
+<button id="basicModeBtn" class="py-1.5 px-4 w-1/2 text-center text-sm font-medium z-10 text-white">Basic</button>
+<button id="scientificModeBtn" class="py-1.5 px-4 w-1/2 text-center text-sm font-medium z-10 text-gray-700">Scientific</button>
+</div>
+</div>
+<div class="theme-toggle">
+<input type="checkbox" id="themeToggle" class="border-none">
+</div>
+</div>
+<!-- Basic Keypad -->
+<div class="basic-keypad grid grid-cols-4 gap-3 p-4 flex-1">
+<!-- Row 1 -->
+<button class="calc-btn function-btn rounded-button py-3 flex items-center justify-center">C</button>
+<button class="calc-btn function-btn rounded-button py-3 flex items-center justify-center">±</button>
+<button class="calc-btn function-btn rounded-button py-3 flex items-center justify-center">%</button>
+<button class="calc-btn operator-btn rounded-button py-3 flex items-center justify-center">÷</button>
+<!-- Row 2 -->
+<button class="calc-btn number-btn rounded-button py-3 flex items-center justify-center">7</button>
+<button class="calc-btn number-btn rounded-button py-3 flex items-center justify-center">8</button>
+<button class="calc-btn number-btn rounded-button py-3 flex items-center justify-center">9</button>
+<button class="calc-btn operator-btn rounded-button py-3 flex items-center justify-center">×</button>
+<!-- Row 3 -->
+<button class="calc-btn number-btn rounded-button py-3 flex items-center justify-center">4</button>
+<button class="calc-btn number-btn rounded-button py-3 flex items-center justify-center">5</button>
+<button class="calc-btn number-btn rounded-button py-3 flex items-center justify-center">6</button>
+<button class="calc-btn operator-btn rounded-button py-3 flex items-center justify-center">−</button>
+<!-- Row 4 -->
+<button class="calc-btn number-btn rounded-button py-3 flex items-center justify-center">1</button>
+<button class="calc-btn number-btn rounded-button py-3 flex items-center justify-center">2</button>
+<button class="calc-btn number-btn rounded-button py-3 flex items-center justify-center">3</button>
+<button class="calc-btn operator-btn rounded-button py-3 flex items-center justify-center">+</button>
+<!-- Row 5 -->
+<button id="memoryAdd" class="calc-btn memory-btn rounded-button py-3 flex items-center justify-center">M+</button>
+<button class="calc-btn number-btn rounded-button py-3 flex items-center justify-center">0</button>
+<button class="calc-btn number-btn rounded-button py-3 flex items-center justify-center">.</button>
+<button class="calc-btn operator-btn rounded-button py-3 flex items-center justify-center">=</button>
+</div>
+<!-- Scientific Keypad -->
+<div class="scientific-keypad grid grid-cols-5 gap-2 p-4 flex-1">
+<!-- Row 1 -->
+<button id="memoryClear" class="calc-btn memory-btn rounded-button py-2 text-sm flex items-center justify-center">MC</button>
+<button id="memoryRecall" class="calc-btn memory-btn rounded-button py-2 text-sm flex items-center justify-center">MR</button>
+<button id="memoryAddScientific" class="calc-btn memory-btn rounded-button py-2 text-sm flex items-center justify-center">M+</button>
+<button id="memorySubtract" class="calc-btn memory-btn rounded-button py-2 text-sm flex items-center justify-center">M-</button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">C</button>
+<!-- Row 2 -->
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">2<sup>nd</sup></button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">x<sup>2</sup></button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">x<sup>3</sup></button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">x<sup>y</sup></button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">e<sup>x</sup></button>
+<!-- Row 3 -->
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">sin</button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">cos</button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">tan</button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">log</button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">ln</button>
+<!-- Row 4 -->
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">(</button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">)</button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">√</button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">n!</button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">π</button>
+<!-- Row 5 -->
+<button class="calc-btn number-btn rounded-button py-2 flex items-center justify-center">7</button>
+<button class="calc-btn number-btn rounded-button py-2 flex items-center justify-center">8</button>
+<button class="calc-btn number-btn rounded-button py-2 flex items-center justify-center">9</button>
+<button class="calc-btn operator-btn rounded-button py-2 flex items-center justify-center">÷</button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">%</button>
+<!-- Row 6 -->
+<button class="calc-btn number-btn rounded-button py-2 flex items-center justify-center">4</button>
+<button class="calc-btn number-btn rounded-button py-2 flex items-center justify-center">5</button>
+<button class="calc-btn number-btn rounded-button py-2 flex items-center justify-center">6</button>
+<button class="calc-btn operator-btn rounded-button py-2 flex items-center justify-center">×</button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">±</button>
+<!-- Row 7 -->
+<button class="calc-btn number-btn rounded-button py-2 flex items-center justify-center">1</button>
+<button class="calc-btn number-btn rounded-button py-2 flex items-center justify-center">2</button>
+<button class="calc-btn number-btn rounded-button py-2 flex items-center justify-center">3</button>
+<button class="calc-btn operator-btn rounded-button py-2 flex items-center justify-center">−</button>
+<button class="calc-btn operator-btn rounded-button py-2 flex items-center justify-center row-span-2">=</button>
+<!-- Row 8 -->
+<button class="calc-btn number-btn rounded-button py-2 flex items-center justify-center col-span-2">0</button>
+<button class="calc-btn number-btn rounded-button py-2 flex items-center justify-center">.</button>
+<button class="calc-btn operator-btn rounded-button py-2 flex items-center justify-center">+</button>
+</div>
+<!-- History Panel -->
+<div class="history-panel p-6 flex flex-col">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-lg font-bold">History</h3>
+<button id="closeHistory" class="w-8 h-8 flex items-center justify-center">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<div class="history-list flex-1 overflow-y-auto">
+<div class="history-item mb-4 pb-3 border-b border-gray-200">
+<div class="text-sm opacity-70">3 × (4 + 2) ÷ 2</div>
+<div class="text-lg font-medium">9</div>
+</div>
+<div class="history-item mb-4 pb-3 border-b border-gray-200">
+<div class="text-sm opacity-70">15 + 27</div>
+<div class="text-lg font-medium">42</div>
+</div>
+<div class="history-item mb-4 pb-3 border-b border-gray-200">
+<div class="text-sm opacity-70">125 ÷ 5</div>
+<div class="text-lg font-medium">25</div>
+</div>
+<div class="history-item mb-4 pb-3 border-b border-gray-200">
+<div class="text-sm opacity-70">8 × 8</div>
+<div class="text-lg font-medium">64</div>
+</div>
+<div class="history-item mb-4 pb-3 border-b border-gray-200">
+<div class="text-sm opacity-70">99 - 42</div>
+<div class="text-lg font-medium">57</div>
+</div>
+</div>
+<button class="calc-btn function-btn rounded-button py-2 mt-2 text-center">Clear History</button>
+</div>
+</div>
+</div>
+<script id="theme-toggle-script">
+document.addEventListener('DOMContentLoaded', function() {
+const themeToggle = document.getElementById('themeToggle');
+themeToggle.addEventListener('change', function() {
+if (this.checked) {
+document.body.classList.add('dark');
+document.body.classList.remove('bg-gray-100');
+document.body.classList.add('bg-gray-900');
+} else {
+document.body.classList.remove('dark');
+document.body.classList.remove('bg-gray-900');
+document.body.classList.add('bg-gray-100');
+}
+});
+});
+</script>
+<script id="mode-toggle-script">
+document.addEventListener('DOMContentLoaded', function() {
+const calculator = document.querySelector('.calculator-content');
+const modeSlider = document.getElementById('modeSlider');
+const basicModeBtn = document.getElementById('basicModeBtn');
+const scientificModeBtn = document.getElementById('scientificModeBtn');
+basicModeBtn.addEventListener('click', function() {
+calculator.classList.remove('scientific-mode');
+modeSlider.classList.remove('scientific');
+basicModeBtn.classList.add('text-white');
+basicModeBtn.classList.remove('text-gray-700');
+scientificModeBtn.classList.remove('text-white');
+scientificModeBtn.classList.add('text-gray-700');
+});
+scientificModeBtn.addEventListener('click', function() {
+calculator.classList.add('scientific-mode');
+modeSlider.classList.add('scientific');
+scientificModeBtn.classList.add('text-white');
+scientificModeBtn.classList.remove('text-gray-700');
+basicModeBtn.classList.remove('text-white');
+basicModeBtn.classList.add('text-gray-700');
+});
+});
+</script>
+<script id="history-toggle-script">
+document.addEventListener('DOMContentLoaded', function() {
+const historyToggle = document.getElementById('historyToggle');
+const closeHistory = document.getElementById('closeHistory');
+const historyPanel = document.querySelector('.history-panel');
+historyToggle.addEventListener('click', function() {
+historyPanel.classList.add('active');
+});
+closeHistory.addEventListener('click', function() {
+historyPanel.classList.remove('active');
+});
+});
+</script>
+<script id="calculator-functionality-script">
+document.addEventListener('DOMContentLoaded', function() {
+const expressionRow = document.querySelector('.expression-row');
+const resultRow = document.querySelector('.result-row');
+const memoryIndicator = document.getElementById('memoryIndicator');
+let memoryValue = 0;
+function updateMemoryIndicator() {
+    memoryIndicator.textContent = `M: ${memoryValue}`;
+    memoryIndicator.style.opacity = memoryValue !== 0 ? '1' : '0.7';
+}
+function animateMemoryButton(button) {
+    button.classList.add('scale-95', 'bg-opacity-80');
+    setTimeout(() => {
+        button.classList.remove('scale-95', 'bg-opacity-80');
+    }, 100);
+}
+document.getElementById('memoryAdd').addEventListener('click', function() {
+    animateMemoryButton(this);
+    memoryValue += parseFloat(currentResult) || 0;
+    updateMemoryIndicator();
+});
+document.getElementById('memoryAddScientific').addEventListener('click', function() {
+    animateMemoryButton(this);
+    memoryValue += parseFloat(currentResult) || 0;
+    updateMemoryIndicator();
+});
+document.getElementById('memorySubtract').addEventListener('click', function() {
+    animateMemoryButton(this);
+    memoryValue -= parseFloat(currentResult) || 0;
+    updateMemoryIndicator();
+});
+document.getElementById('memoryClear').addEventListener('click', function() {
+    animateMemoryButton(this);
+    memoryValue = 0;
+    updateMemoryIndicator();
+});
+document.getElementById('memoryRecall').addEventListener('click', function() {
+    animateMemoryButton(this);
+    if (memoryValue !== 0) {
+        if (lastOperation) {
+            currentResult = memoryValue.toString();
+        } else {
+            currentResult = currentResult === '0' ? 
+                memoryValue.toString() : 
+                currentResult + memoryValue.toString();
+        }
+        updateDisplay();
+    }
+});
+const numberButtons = document.querySelectorAll('.number-btn');
+const operatorButtons = document.querySelectorAll('.operator-btn');
+const functionButtons = document.querySelectorAll('.function-btn');
+let currentExpression = '';
+let currentResult = '0';
+let lastOperation = false;
+// Update display
+function updateDisplay() {
+expressionRow.textContent = currentExpression || '0';
+resultRow.textContent = currentResult;
+}
+// Add button press animation
+function animateButton(button) {
+button.classList.add('scale-95', 'shadow-inner');
+setTimeout(() => {
+button.classList.remove('scale-95', 'shadow-inner');
+}, 100);
+}
+// Number button click
+numberButtons.forEach(button => {
+button.addEventListener('click', function() {
+animateButton(this);
+const value = this.textContent.trim();
+if (lastOperation) {
+currentResult = '0';
+lastOperation = false;
+}
+if (currentResult === '0' && value !== '.') {
+currentResult = value;
+} else {
+// Prevent multiple decimal points
+if (value === '.' && currentResult.includes('.')) return;
+currentResult += value;
+}
+updateDisplay();
+});
+});
+// Operator button click
+operatorButtons.forEach(button => {
+button.addEventListener('click', function() {
+animateButton(this);
+const operator = this.textContent.trim();
+if (operator === '=') {
+try {
+// Prepare expression for evaluation
+let evalExpression = currentExpression + currentResult;
+evalExpression = evalExpression.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
+// Evaluate and format result
+const result = eval(evalExpression);
+currentExpression += currentResult + ' = ';
+currentResult = Number.isInteger(result) ? result.toString() : result.toFixed(8).replace(/\.?0+$/, '');
+lastOperation = true;
+} catch (error) {
+currentResult = 'Error';
+}
+} else {
+// Add operator to expression
+currentExpression += currentResult + ' ' + operator + ' ';
+lastOperation = true;
+}
+updateDisplay();
+});
+});
+// Function button click
+functionButtons.forEach(button => {
+button.addEventListener('click', function() {
+animateButton(this);
+const func = this.textContent.trim();
+if (func === 'C') {
+currentExpression = '';
+currentResult = '0';
+} else if (func === '±') {
+currentResult = (parseFloat(currentResult) * -1).toString();
+} else if (func === '%') {
+currentResult = (parseFloat(currentResult) / 100).toString();
+} else if (func === 'sin') {
+currentResult = Math.sin(parseFloat(currentResult)).toFixed(8).replace(/\.?0+$/, '');
+} else if (func === 'cos') {
+currentResult = Math.cos(parseFloat(currentResult)).toFixed(8).replace(/\.?0+$/, '');
+} else if (func === 'tan') {
+currentResult = Math.tan(parseFloat(currentResult)).toFixed(8).replace(/\.?0+$/, '');
+} else if (func === 'log') {
+currentResult = Math.log10(parseFloat(currentResult)).toFixed(8).replace(/\.?0+$/, '');
+} else if (func === 'ln') {
+currentResult = Math.log(parseFloat(currentResult)).toFixed(8).replace(/\.?0+$/, '');
+} else if (func === '√') {
+currentResult = Math.sqrt(parseFloat(currentResult)).toFixed(8).replace(/\.?0+$/, '');
+} else if (func === 'π') {
+currentResult = Math.PI.toFixed(8).replace(/\.?0+$/, '');
+} else if (func === 'x²') {
+currentResult = (parseFloat(currentResult) ** 2).toFixed(8).replace(/\.?0+$/, '');
+} else if (func === 'x³') {
+currentResult = (parseFloat(currentResult) ** 3).toFixed(8).replace(/\.?0+$/, '');
+} else if (func === 'e^x') {
+currentResult = Math.exp(parseFloat(currentResult)).toFixed(8).replace(/\.?0+$/, '');
+} else if (func === 'n!') {
+const factorial = n => {
+if (n <= 1) return 1;
+return n * factorial(n - 1);
+};
+const num = parseInt(currentResult);
+if (num < 0 || !Number.isInteger(num)) {
+currentResult = 'Error';
+} else {
+currentResult = factorial(num).toString();
+}
+}
+updateDisplay();
+});
+});
+// Keyboard support
+document.addEventListener('keydown', function(event) {
+const key = event.key;
+// Find corresponding button
+let targetButton;
+if (/[0-9.]/.test(key)) {
+targetButton = Array.from(numberButtons).find(btn => btn.textContent.trim() === key);
+} else if (['+', '-', '*', '/', '=', 'Enter'].includes(key)) {
+let operatorKey = key;
+if (key === '*') operatorKey = '×';
+if (key === '/') operatorKey = '÷';
+if (key === '-') operatorKey = '−';
+if (key === 'Enter') operatorKey = '=';
+targetButton = Array.from(operatorButtons).find(btn => btn.textContent.trim() === operatorKey);
+} else if (key === 'Escape') {
+targetButton = Array.from(functionButtons).find(btn => btn.textContent.trim() === 'C');
+} else if (key === '%') {
+targetButton = Array.from(functionButtons).find(btn => btn.textContent.trim() === '%');
+}
+// Simulate button click if found
+if (targetButton) {
+targetButton.click();
+event.preventDefault();
+}
+});
+});
+</script>
+</body>
+</html>
