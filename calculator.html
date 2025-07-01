@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modern Calculator</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#6C5CE7',secondary:'#A8A4FF'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4 transition-colors duration-300">
+<div class="calculator max-w-md w-full mx-auto rounded-3xl overflow-hidden shadow-2xl relative flex flex-col h-[650px] max-h-[90vh]">
+<div class="calculator-content flex flex-col h-full relative">
+<!-- Display Section -->
+<div class="display p-6 flex flex-col justify-between h-[180px] rounded-xl mb-4">
+<div class="flex justify-between items-center">
+<div id="memoryIndicator" class="text-xs font-medium opacity-70">M: 0</div>
+<button id="historyToggle" class="w-8 h-8 flex items-center justify-center text-primary">
+<i class="ri-history-line ri-lg"></i>
+</button>
+</div>
+<div class="expression-row text-right text-lg opacity-70 h-6 overflow-hidden">3 × (4 + 2) ÷ 2</div>
+<div class="result-row text-right text-4xl font-bold">9</div>
+</div>
+<!-- Mode Toggle & Theme -->
+<div class="controls flex justify-between items-center mb-4 px-4">
+<div class="mode-toggle w-48 relative">
+<div class="mode-toggle-slider" id="modeSlider"></div>
+<div class="flex justify-between relative z-1">
+<button id="basicModeBtn" class="py-1.5 px-4 w-1/2 text-center text-sm font-medium z-10 text-white">Basic</button>
+<button id="scientificModeBtn" class="py-1.5 px-4 w-1/2 text-center text-sm font-medium z-10 text-gray-700">Scientific</button>
+</div>
+</div>
+<div class="theme-toggle">
+<input type="checkbox" id="themeToggle" class="border-none">
+</div>
+</div>
+<!-- Basic Keypad -->
+<div class="basic-keypad grid grid-cols-4 gap-3 p-4 flex-1">
+<!-- Row 1 -->
+<button class="calc-btn function-btn rounded-button py-3 flex items-center justify-center">C</button>
+<button class="calc-btn function-btn rounded-button py-3 flex items-center justify-center">±</button>
+<button class="calc-btn function-btn rounded-button py-3 flex items-center justify-center">%</button>
+<button class="calc-btn operator-btn rounded-button py-3 flex items-center justify-center">÷</button>
+<!-- Row 2 -->
+<button class="calc-btn number-btn rounded-button py-3 flex items-center justify-center">7</button>
+<button class="calc-btn number-btn rounded-button py-3 flex items-center justify-center">8</button>
+<button class="calc-btn number-btn rounded-button py-3 flex items-center justify-center">9</button>
+<button class="calc-btn operator-btn rounded-button py-3 flex items-center justify-center">×</button>
+<!-- Row 3 -->
+<button class="calc-btn number-btn rounded-button py-3 flex items-center justify-center">4</button>
+<button class="calc-btn number-btn rounded-button py-3 flex items-center justify-center">5</button>
+<button class="calc-btn number-btn rounded-button py-3 flex items-center justify-center">6</button>
+<button class="calc-btn operator-btn rounded-button py-3 flex items-center justify-center">−</button>
+<!-- Row 4 -->
+<button class="calc-btn number-btn rounded-button py-3 flex items-center justify-center">1</button>
+<button class="calc-btn number-btn rounded-button py-3 flex items-center justify-center">2</button>
+<button class="calc-btn number-btn rounded-button py-3 flex items-center justify-center">3</button>
+<button class="calc-btn operator-btn rounded-button py-3 flex items-center justify-center">+</button>
+<!-- Row 5 -->
+<button id="memoryAdd" class="calc-btn memory-btn rounded-button py-3 flex items-center justify-center">M+</button>
+<button class="calc-btn number-btn rounded-button py-3 flex items-center justify-center">0</button>
+<button class="calc-btn number-btn rounded-button py-3 flex items-center justify-center">.</button>
+<button class="calc-btn operator-btn rounded-button py-3 flex items-center justify-center">=</button>
+</div>
+<!-- Scientific Keypad -->
+<div class="scientific-keypad grid grid-cols-5 gap-2 p-4 flex-1">
+<!-- Row 1 -->
+<button id="memoryClear" class="calc-btn memory-btn rounded-button py-2 text-sm flex items-center justify-center">MC</button>
+<button id="memoryRecall" class="calc-btn memory-btn rounded-button py-2 text-sm flex items-center justify-center">MR</button>
+<button id="memoryAddScientific" class="calc-btn memory-btn rounded-button py-2 text-sm flex items-center justify-center">M+</button>
+<button id="memorySubtract" class="calc-btn memory-btn rounded-button py-2 text-sm flex items-center justify-center">M-</button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">C</button>
+<!-- Row 2 -->
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">2<sup>nd</sup></button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">x<sup>2</sup></button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">x<sup>3</sup></button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">x<sup>y</sup></button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">e<sup>x</sup></button>
+<!-- Row 3 -->
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">sin</button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">cos</button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">tan</button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">log</button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">ln</button>
+<!-- Row 4 -->
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">(</button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">)</button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">√</button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">n!</button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">π</button>
+<!-- Row 5 -->
+<button class="calc-btn number-btn rounded-button py-2 flex items-center justify-center">7</button>
+<button class="calc-btn number-btn rounded-button py-2 flex items-center justify-center">8</button>
+<button class="calc-btn number-btn rounded-button py-2 flex items-center justify-center">9</button>
+<button class="calc-btn operator-btn rounded-button py-2 flex items-center justify-center">÷</button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">%</button>
+<!-- Row 6 -->
+<button class="calc-btn number-btn rounded-button py-2 flex items-center justify-center">4</button>
+<button class="calc-btn number-btn rounded-button py-2 flex items-center justify-center">5</button>
+<button class="calc-btn number-btn rounded-button py-2 flex items-center justify-center">6</button>
+<button class="calc-btn operator-btn rounded-button py-2 flex items-center justify-center">×</button>
+<button class="calc-btn function-btn rounded-button py-2 text-sm flex items-center justify-center">±</button>
+<!-- Row 7 -->
+<button class="calc-btn number-btn rounded-button py-2 flex items-center justify-center">1</button>
+<button class="calc-btn number-btn rounded-button py-2 flex items-center justify-center">2</button>
+<button class="calc-btn number-btn rounded-button py-2 flex items-center justify-center">3</button>
+<button class="calc-btn operator-btn rounded-button py-2 flex items-center justify-center">−</button>
+<button class="calc-btn operator-btn rounded-button py-2 flex items-center justify-center row-span-2">=</button>
+<!-- Row 8 -->
+<button class="calc-btn number-btn rounded-button py-2 flex items-center justify-center col-span-2">0</button>
+<button class="calc-btn number-btn rounded-button py-2 flex items-center justify-center">.</button>
+<button class="calc-btn operator-btn rounded-button py-2 flex items-center justify-center">+</button>
+</div>
+<!-- History Panel -->
+<div class="history-panel p-6 flex flex-col">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-lg font-bold">History</h3>
+<button id="closeHistory" class="w-8 h-8 flex items-center justify-center">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<div class="history-list flex-1 overflow-y-auto">
+<div class="history-item mb-4 pb-3 border-b border-gray-200">
+<div class="text-sm opacity-70">3 × (4 + 2) ÷ 2</div>
+<div class="text-lg font-medium">9</div>
+</div>
+<div class="history-item mb-4 pb-3 border-b border-gray-200">
+<div class="text-sm opacity-70">15 + 27</div>
+<div class="text-lg font-medium">42</div>
+</div>
+<div class="history-item mb-4 pb-3 border-b border-gray-200">
+<div class="text-sm opacity-70">125 ÷ 5</div>
+<div class="text-lg font-medium">25</div>
+</div>
+<div class="history-item mb-4 pb-3 border-b border-gray-200">
+<div class="text-sm opacity-70">8 × 8</div>
+<div class="text-lg font-medium">64</div>
+</div>
+<div class="history-item mb-4 pb-3 border-b border-gray-200">
+<div class="text-sm opacity-70">99 - 42</div>
+<div class="text-lg font-medium">57</div>
+</div>
+</div>
+<button class="calc-btn function-btn rounded-button py-2 mt-2 text-center">Clear History</button>
+</div>
+</div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
